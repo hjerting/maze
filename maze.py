@@ -4,6 +4,7 @@ from cell import Cell
 
 class Maze:
     max_level = 0
+    DIRECTIONS = ['up', 'right', 'down', 'left']
 
     def __init__(
             self,
@@ -33,13 +34,14 @@ class Maze:
         self._create_cells()
         self.start_cell = self._get_cell(0, 0)
         self.end_cell = self._get_cell(self.num_rows - 1, self.num_cols - 1)
-        
+
         self._break_entrance_and_exit()
 
         if (self.window):
             #  self._draw_cells()
+            print("Constructing maze:")
             self._break_walls_recursive(0, 0, 0)
-            
+            print(f"Max recursion level:{self.max_level}")
         
     def _create_cells(self):
         self._cells = []
@@ -99,7 +101,6 @@ class Maze:
     def _break_walls_recursive(self, i, j, level):
         if level > self.max_level:
             self.max_level = level
-        print("recursion level:", level, "- max recursion level:", self.max_level)
         self._get_cell(i, j).visited = True
         while True:
             neighbours = self._get_neighbours(i, j)
@@ -131,30 +132,69 @@ class Maze:
                 self._get_cell(r, c).visited = False
     
     def solve(self):
-        return self._solve_r(0, 0)
+        print("Solving maze:")
+        self._reset_cells_visited()
+        self.max_level = 0
+        result = self._solve_r(0, 0, 0)
+        if result:
+            print("Hurrah! Solved maze! :-)")
+        else:
+            print("Failed to solve maze! :-(")
+        print(f"Max recursion level:{self.max_level}")
+
+    def _next(self, row, col, direction):
+        if direction == 'up':
+            if self._get_cell(row, col).has_top_wall:
+                return None
+            return (row - 1, col)
+        if direction == 'right':
+            if self._get_cell(row, col).has_right_wall:
+                return None
+            return (row, col + 1)
+        if direction == 'down':
+            if self._get_cell(row, col).has_bottom_wall:
+                return None
+            return (row + 1, col)
+        if direction == 'left':
+            if self._get_cell(row, col).has_left_wall:
+                return None
+            return (row, col - 1)
+        raise Exception("Unknown move direction.")
     
-    def _solve_r(self, row, col):
+    def _solve_r(self, row, col, level):
+        if level > self.max_level:
+            self.max_level = level
         # Call the _animate method.
-        pass
+        self._animate()
         # Mark the current cell as visited
-        
+        self._cells[row][col].visited = True
         # If you are at the "end" cell (the goal) then return True.
-        
+        if self._cells[row][col] is self.end_cell:
+            return True
         # For each direction:
-        
-        # If there is a cell in that direction, there is no wall blocking you, 
-        # and that cell hasn't been visited:
-            # Draw a move between the current cell and that cell
-            
-            # Call _solve_r recursively to move to that cell. 
-            
-                # If that cell returns True, then just return True and 
-                # don't worry about the other directions.
-                
-                #Otherwise, draw an "undo" move between the current cell and 
-                # the next cell
+        for direction in Maze.DIRECTIONS:
+            dir = self._next(row, col, direction)
+            if not dir:
+                continue
+            next_row, next_col = dir
+            next_cell = self._get_cell(next_row, next_col)
+            # If there is a cell in that direction, there is no wall blocking you,
+            # and that cell hasn't been visited:
+            if next_cell and not next_cell.visited:
+                # Draw a move between the current cell and that cell
+                self._cells[row][col]._draw_move(next_cell)
+                # Call _solve_r recursively to move to that cell. 
+                if self._solve_r(next_row, next_col, level + 1):
+                    # If that cell returns True, then just return True and 
+                    # don't worry about the other directions.
+                    return True
+                else:
+                    #Otherwise, draw an "undo" move between the current cell and 
+                    # the next cell
+                    self._cells[row][col]._draw_move(next_cell, True)
 
         # If none of the directions worked out, return False.
+        return False
 
 
     

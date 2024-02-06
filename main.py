@@ -18,6 +18,7 @@ def main():
 
     window = Window(width, height)
     maze = Maze(MARGIN, MARGIN, ROWS, COLUMNS, CELL_SIZE, CELL_SIZE, window)
+    maze.solve()
     window.wait_for_close()
 
 if __name__ == "__main__":
