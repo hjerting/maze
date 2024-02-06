@@ -2,17 +2,20 @@
 
 from window import Window
 from cell import Cell
+from maze import Maze
 
 def main():
-    window = Window(800, 400)
-    cell1 = Cell(window, 1, 1, 100, 100)
-    cell1.draw()
-    cell2 = Cell(window, 100, 1, 200, 100)
-    cell2.draw()
-    cell1.draw_move(cell2, undo=True)
-    cell3 = Cell(window, 1, 100, 100, 200)
-    cell3.draw()
-    cell1.draw_move(cell3)
+    MARGIN = 10
+    ROWS = 40
+    COLUMNS = 60
+    CELL_SIZE = 20
+    
+    width = COLUMNS * CELL_SIZE + 2 * MARGIN
+    height = ROWS * CELL_SIZE + 2 * MARGIN
+
+    window = Window(width, height)
+    maze = Maze(MARGIN, MARGIN, ROWS, COLUMNS, CELL_SIZE, CELL_SIZE, window)
     window.wait_for_close()
 
-main()
+if __name__ == "__main__":
+    main()
