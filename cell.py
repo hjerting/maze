@@ -4,7 +4,7 @@ from window import Window
 
 class Cell:
 
-    WALL_COLOR = '#F00'
+    WALL_COLOR = '#000'
     PATH_COLOR = '#0F0'
     PATH_UNDO = '#AAA'
 
@@ -33,31 +33,41 @@ class Cell:
     def remove_left(self):
         self.has_left_wall = False
     
-    def _draw_wall(self, pos1, pos2, wall_exists):
-        if wall_exists:
-            line = Line(Point(pos1[0], pos1[1]), Point(pos2[0], pos2[1]))
-            self._window.draw_line(line, Cell.WALL_COLOR)
-        #else:
-            #line = Line(Point(pos1[0] + 2, pos1[1] + 2), Point(pos2[0] - 2, pos2[1] - 2))
-            #self._window.draw_line(line, Window.BACKGROUND_COLOR)
+    def _draw_wall(self, x1, y1, x2, y2, color):
+        line = Line(Point(x1, y1), Point(x2, y2))
+        self._window.draw_line(line, color)
 
     def draw(self):
-        top_left = (self._x1, self._y1)
-        top_right = (self._x2, self._y1)
-        bottom_left = (self._x1, self._y2)
-        bottom_right = (self._x2, self._y2)
+        """
+        # Clear walls
+        # Clear top wall
+        self._draw_wall(self._x1 + 1, self._y1, self._x2 - 1, self._y1, Window.BACKGROUND_COLOR)
 
+        # Clear right wall
+        self._draw_wall(self._x2, self._y1 + 1, self._x2, self._y2 - 1, Window.BACKGROUND_COLOR)
+
+        # Clear bottom wall
+        self._draw_wall(self._x1 + 1, self._y2, self._x2 - 1, self._y2, Window.BACKGROUND_COLOR)
+
+        # Clear left wall
+        self._draw_wall(self._x1, self._y1 + 1, self._x1, self._y2 - 1, Window.BACKGROUND_COLOR)
+        """
         # Draw top wall
-        self._draw_wall((self._x1 - 1, self._y1), (self._x2 + 1, self._y1), self.has_top_wall)
+        if self.has_top_wall:
+            self._draw_wall(self._x1 - 1, self._y1, self._x2 + 1, self._y1, Cell.WALL_COLOR)
 
         # Draw right wall
-        self._draw_wall(top_right, bottom_right, self.has_right_wall)
+        if self.has_right_wall:
+            self._draw_wall(self._x2, self._y1 - 1, self._x2, self._y2 + 1, Cell.WALL_COLOR)
 
         # Draw bottom wall
-        self._draw_wall(bottom_left, bottom_right, self.has_bottom_wall)
+        if self.has_bottom_wall:
+            self._draw_wall(self._x1 - 1, self._y2, self._x2 + 1, self._y2, Cell.WALL_COLOR)
 
-        # Draw left wall
-        self._draw_wall(top_left, bottom_left, self.has_left_wall)
+            # Draw left wall
+        if self.has_left_wall:
+            self._draw_wall(self._x1, self._y1 - 1, self._x1, self._y2 + 1, Cell.WALL_COLOR)
+
     
     def _midpoint(self, val1, val2):
         return val1 + (val2 - val1) // 2

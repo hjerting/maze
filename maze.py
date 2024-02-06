@@ -3,6 +3,7 @@ import random
 from cell import Cell
 
 class Maze:
+    max_level = 0
 
     def __init__(
             self,
@@ -30,11 +31,14 @@ class Maze:
             random.seed(seed)
 
         self._create_cells()
+        self.start_cell = self._get_cell(0, 0)
+        self.end_cell = self._get_cell(self.num_rows - 1, self.num_cols - 1)
+        
         self._break_entrance_and_exit()
 
         if (self.window):
             #  self._draw_cells()
-            self._break_walls_recursive(0, 0)
+            self._break_walls_recursive(0, 0, 0)
             
         
     def _create_cells(self):
@@ -92,7 +96,10 @@ class Maze:
                 cell1.remove_top()
                 cell2.remove_bottom()
 
-    def _break_walls_recursive(self, i, j):
+    def _break_walls_recursive(self, i, j, level):
+        if level > self.max_level:
+            self.max_level = level
+        print("recursion level:", level, "- max recursion level:", self.max_level)
         self._get_cell(i, j).visited = True
         while True:
             neighbours = self._get_neighbours(i, j)
@@ -103,7 +110,7 @@ class Maze:
             new_i, new_j = random.choice(neighbours)
             # break wall between the cells
             self._remove_walls(i, j, new_i, new_j)
-            self._break_walls_recursive(new_i, new_j)
+            self._break_walls_recursive(new_i, new_j, level + 1)
     
     def _draw_cell(self, i, j):
         self._cells[i][j].draw()
@@ -122,6 +129,33 @@ class Maze:
         for r in range(self.num_rows):
             for c in range(self.num_cols):
                 self._get_cell(r, c).visited = False
+    
+    def solve(self):
+        return self._solve_r(0, 0)
+    
+    def _solve_r(self, row, col):
+        # Call the _animate method.
+        pass
+        # Mark the current cell as visited
+        
+        # If you are at the "end" cell (the goal) then return True.
+        
+        # For each direction:
+        
+        # If there is a cell in that direction, there is no wall blocking you, 
+        # and that cell hasn't been visited:
+            # Draw a move between the current cell and that cell
+            
+            # Call _solve_r recursively to move to that cell. 
+            
+                # If that cell returns True, then just return True and 
+                # don't worry about the other directions.
+                
+                #Otherwise, draw an "undo" move between the current cell and 
+                # the next cell
+
+        # If none of the directions worked out, return False.
+
 
     
     
